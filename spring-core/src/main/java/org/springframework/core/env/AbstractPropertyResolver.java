@@ -60,6 +60,7 @@ public abstract class AbstractPropertyResolver implements ConfigurablePropertyRe
 	@Nullable
 	private String valueSeparator = SystemPropertyUtils.VALUE_SEPARATOR;
 
+	// 存放所有需要的属性的key
 	private final Set<String> requiredProperties = new LinkedHashSet<>();
 
 

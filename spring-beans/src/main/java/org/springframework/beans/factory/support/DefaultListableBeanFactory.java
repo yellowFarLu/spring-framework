@@ -166,6 +166,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
 
 	/** List of bean definition names, in registration order */
+	// 按注册顺序列出的bean定义名称列表
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
 	/** List of names of manually registered singletons, in registration order */
@@ -176,6 +177,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	private volatile String[] frozenBeanDefinitionNames;
 
 	/** Whether bean definition metadata may be cached for all beans */
+	// 是否可以为 所有bean 缓存 bean定义元数据
 	private volatile boolean configurationFrozen = false;
 
 
@@ -407,18 +409,29 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		List<String> result = new ArrayList<>();
 
 		// Check all bean definitions.
+		// 检查所有的bean定义
 		for (String beanName : this.beanDefinitionNames) {
 			// Only consider bean as eligible if the bean name
 			// is not defined as alias for some other bean.
+			/*
+			 * 如果bean名称不被定义为其他bean的别名，只考虑bean是合格的。
+			 */
 			if (!isAlias(beanName)) {
 				try {
+					// 获取合并的根目录定义
 					RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 					// Only check bean definition if it is complete.
+					// 仅检查bean定义是否已完成
+					/*
+					 * 根定义非抽象的、（饥饿加载 或 （根bean拥有类型 或 根并非延迟加载 或 当前beanFactory允许以前加载class））、指定的bean需要急切初始化
+					 */
 					if (!mbd.isAbstract() && (allowEagerInit ||
 							((mbd.hasBeanClass() || !mbd.isLazyInit() || isAllowEagerClassLoading())) &&
 									!requiresEagerInitForType(mbd.getFactoryBeanName()))) {
 						// In case of FactoryBean, match object created by FactoryBean.
+						// 如果是factoryBean，由factoryBean创建创建匹配的对象
 						boolean isFactoryBean = isFactoryBean(beanName, mbd);
+						// 获取 被这个bean定义 装饰的 目标bean定义
 						BeanDefinitionHolder dbd = mbd.getDecoratedDefinition();
 						boolean matchFound =
 								(allowEagerInit || !isFactoryBean ||

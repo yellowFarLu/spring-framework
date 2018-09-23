@@ -515,40 +515,52 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
+			// 上下文为刷新做准备
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// 告诉子类去刷新内部的beanFactory
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// 配置beanFactory以使用上下文
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				// 允许在上下文子类中对beanFactory进行后处理
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
+				// 调用 beanFactory的后置处理器
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				// 注册bean处理器，拦截bean创建
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
+				// 初始化此上下文的消息源
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				// 为该上下文初始化时间多播
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
+				// 在特定上下文子类中初始化其他特殊的bean
 				onRefresh();
 
 				// Check for listener beans and register them.
+				// 检查监听器bean，并且注册他们
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				// 实例化所有剩余的、非懒加载的单例bean
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
+				// 最后一步了：发布相应事件
 				finishRefresh();
 			}
 
@@ -559,18 +571,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				}
 
 				// Destroy already created singletons to avoid dangling resources.
+				// 破坏已经创建的单例bean，避免浪费资源
 				destroyBeans();
 
 				// Reset 'active' flag.
+				// 重新设置active标志
 				cancelRefresh(ex);
 
 				// Propagate exception to caller.
+				// 向调用方传播异常
 				throw ex;
 			}
 
 			finally {
 				// Reset common introspection caches in Spring's core, since we
 				// might not ever need metadata for singleton beans anymore...
+				// 在Spring内核中重置常见的缓存，因为我们可能不再需要单元bean的元数据了
 				resetCommonCaches();
 			}
 		}
@@ -581,8 +597,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * active flag as well as performing any initialization of property sources.
 	 */
 	protected void prepareRefresh() {
+		// 记录上下文启动时的时间
 		this.startupDate = System.currentTimeMillis();
+		// 记录这个上下文是否关闭
 		this.closed.set(false);
+		// 记录上下文是否在运动
 		this.active.set(true);
 
 		if (logger.isInfoEnabled()) {
@@ -590,14 +609,19 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize any placeholder property sources in the context environment
+		// 在上下文环境中初始化任何占位符属性
 		initPropertySources();
 
 		// Validate that all properties marked as required are resolvable
 		// see ConfigurablePropertyResolver#setRequiredProperties
+		// 验证 所有标记为需要的属性 是否可以解析
 		getEnvironment().validateRequiredProperties();
 
 		// Allow for the collection of early ApplicationEvents,
 		// to be published once the multicaster is available...
+		/*
+		 * 允许收集早期应用事件，一旦多播可用，将发布该事件（这里指这个属性用来收集事件吧）
+		 */
 		this.earlyApplicationEvents = new LinkedHashSet<>();
 	}
 
@@ -865,6 +889,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.freezeConfiguration();
 
 		// Instantiate all remaining (non-lazy-init) singletons.
+		// 提前实例化剩余的、非懒加载的单例
 		beanFactory.preInstantiateSingletons();
 	}
 

@@ -42,7 +42,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	 * context-params. See {@link ContextLoader} superclass documentation for details on
 	 * default values for each.
 	 * <p>This constructor is typically used when declaring {@code ContextLoaderListener}
-	 * as a {@code <listener>} within {@code web.xml}, where a no-arg constructor is
+	 * as a {@code <listener>} within {@code web.xml}, whe/re a no-arg constructor is
 	 * required.
 	 * <p>The created application context will be registered into the ServletContext under
 	 * the attribute name {@link WebApplicationContext#ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE}
@@ -100,6 +100,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
+		// 获取servlet上下文，初始化webApplication上下文
 		initWebApplicationContext(event.getServletContext());
 	}
 
