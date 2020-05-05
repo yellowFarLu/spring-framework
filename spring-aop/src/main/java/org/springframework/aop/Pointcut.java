@@ -39,8 +39,8 @@ public interface Pointcut {
 	ClassFilter getClassFilter();
 
 	/**
-	 * Return the MethodMatcher for this pointcut.
-	 * @return the MethodMatcher (never {@code null})
+	 * 返回这个切点的MethodMatcher
+	 * 使用MethodMatcher来判断是否需要对当前方法进行增强
 	 */
 	MethodMatcher getMethodMatcher();
 

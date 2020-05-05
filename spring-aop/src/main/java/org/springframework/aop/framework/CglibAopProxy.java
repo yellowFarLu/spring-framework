@@ -162,6 +162,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 		}
 
 		try {
+			// 取得需要代理的目标对象
 			Class<?> rootClass = this.advised.getTargetClass();
 			Assert.state(rootClass != null, "Target class must be available for creating a CGLIB proxy");
 
@@ -191,6 +192,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 			enhancer.setStrategy(new ClassLoaderAwareUndeclaredThrowableStrategy(classLoader));
 
+			// 设置回调函数
 			Callback[] callbacks = getCallbacks(rootClass);
 			Class<?>[] types = new Class<?>[callbacks.length];
 			for (int x = 0; x < types.length; x++) {
@@ -656,6 +658,9 @@ class CglibAopProxy implements AopProxy, Serializable {
 			this.advised = advised;
 		}
 
+		/**
+		 * 调用目标方法的时候，会回调到这里来
+		 */
 		@Override
 		@Nullable
 		public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
@@ -672,21 +677,22 @@ class CglibAopProxy implements AopProxy, Serializable {
 				// Get as late as possible to minimize the time we "own" the target, in case it comes from a pool...
 				target = targetSource.getTarget();
 				Class<?> targetClass = (target != null ? target.getClass() : null);
+
+				// 取得配置好的拦截器
 				List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
+
 				Object retVal;
 				// Check whether we only have one InvokerInterceptor: that is,
 				// no real advice, but just reflective invocation of the target.
 				if (chain.isEmpty() && Modifier.isPublic(method.getModifiers())) {
-					// We can skip creating a MethodInvocation: just invoke the target directly.
-					// Note that the final invoker must be an InvokerInterceptor, so we know
-					// it does nothing but a reflective operation on the target, and no hot
-					// swapping or fancy proxying.
+					// 没有设置拦截器，通过CGLib的MethodProxy进行直接方法调用
 					Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
 					retVal = methodProxy.invoke(target, argsToUse);
 				}
 				else {
-					// We need to create a method invocation...
-					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
+					// 先调用拦截器，再调用目标方法
+					retVal = new CglibMethodInvocation(
+							proxy, target, method, args, targetClass, chain, methodProxy).proceed();
 				}
 				retVal = processReturnType(proxy, target, method, retVal);
 				return retVal;

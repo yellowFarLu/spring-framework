@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import org.springframework.aop.MethodBeforeAdvice;
 
 /**
- * Simple before advice example that we can use for counting checks.
+ * 统计被调用方法的次数
  *
  * @author Rod Johnson
  */
