@@ -514,52 +514,39 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
-			// Prepare this context for refreshing.
 			// 上下文为刷新做准备
 			prepareRefresh();
 
-			// Tell the subclass to refresh the internal bean factory.
-			// 告诉子类去刷新内部的beanFactory
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
-			// Prepare the bean factory for use in this context.
 			// 配置beanFactory以使用上下文
 			prepareBeanFactory(beanFactory);
 
 			try {
-				// Allows post-processing of the bean factory in context subclasses.
-				// 允许在上下文子类中对beanFactory进行后处理
+				// 允许在上下文子类中对beanFactory进行后处理，为beanFactory添加后置处理器
 				postProcessBeanFactory(beanFactory);
 
-				// Invoke factory processors registered as beans in the context.
 				// 调用 beanFactory的后置处理器
 				invokeBeanFactoryPostProcessors(beanFactory);
 
-				// Register bean processors that intercept bean creation.
-				// 注册bean处理器，拦截bean创建
+				// 注册bean处理器，用于拦截bean创建
 				registerBeanPostProcessors(beanFactory);
 
-				// Initialize message source for this context.
 				// 初始化此上下文的消息源
 				initMessageSource();
 
-				// Initialize event multicaster for this context.
 				// 为该上下文初始化时间多播
 				initApplicationEventMulticaster();
 
-				// Initialize other special beans in specific context subclasses.
-				// 在特定上下文子类中初始化其他特殊的bean
+				// 在上下文子类中初始化其他特殊的bean
 				onRefresh();
 
-				// Check for listener beans and register them.
 				// 检查监听器bean，并且注册他们
 				registerListeners();
 
-				// Instantiate all remaining (non-lazy-init) singletons.
 				// 实例化所有剩余的、非懒加载的单例bean
 				finishBeanFactoryInitialization(beanFactory);
 
-				// Last step: publish corresponding event.
 				// 最后一步了：发布相应事件
 				finishRefresh();
 			}
@@ -635,13 +622,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	/**
-	 * Tell the subclass to refresh the internal bean factory.
+	 * 告诉子类去刷新内部的beanFactory
 	 * @return the fresh BeanFactory instance
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		// 刷新beanFactory
 		refreshBeanFactory();
+
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		if (logger.isDebugEnabled()) {
 			logger.debug("Bean factory for " + getDisplayName() + ": " + beanFactory);
@@ -888,8 +877,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Allow for caching all bean definition metadata, not expecting further changes.
 		beanFactory.freezeConfiguration();
 
-		// Instantiate all remaining (non-lazy-init) singletons.
-		// 提前实例化剩余的、非懒加载的单例
+		// 提前实例化剩余的、非懒加载的单例（触发依赖注入）
 		beanFactory.preInstantiateSingletons();
 	}
 

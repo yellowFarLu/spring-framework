@@ -35,8 +35,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 /**
- * Internal class for managing injection metadata.
- * Not intended for direct use in applications.
+ 管理注入元数据的内部类。
+
+ 不打算直接用于应用程序。
  *
  * <p>Used by {@link AutowiredAnnotationBeanPostProcessor},
  * {@link org.springframework.context.annotation.CommonAnnotationBeanPostProcessor} and
@@ -51,8 +52,14 @@ public class InjectionMetadata {
 
 	private final Class<?> targetClass;
 
+	/**
+	 * 需要注入的元素
+	 */
 	private final Collection<InjectedElement> injectedElements;
 
+	/**
+	 * todo 需要check的元素？
+	 */
 	@Nullable
 	private volatile Set<InjectedElement> checkedElements;
 
@@ -86,6 +93,7 @@ public class InjectionMetadata {
 			boolean debug = logger.isDebugEnabled();
 			for (InjectedElement element : elementsToIterate) {
 				if (debug) {
+					// 正在处理 bean的字段值注入
 					logger.debug("Processing injected element of bean '" + beanName + "': " + element);
 				}
 				element.inject(target, beanName, pvs);
@@ -166,12 +174,14 @@ public class InjectionMetadata {
 		}
 
 		/**
+		 * 注入操作
 		 * Either this or {@link #getResourceToInject} needs to be overridden.
 		 */
 		protected void inject(Object target, @Nullable String requestingBeanName, @Nullable PropertyValues pvs)
 				throws Throwable {
 
 			if (this.isField) {
+				// 是字段，则通过想容器请求需要的bean，进行注入
 				Field field = (Field) this.member;
 				ReflectionUtils.makeAccessible(field);
 				field.set(target, getResourceToInject(target, requestingBeanName));

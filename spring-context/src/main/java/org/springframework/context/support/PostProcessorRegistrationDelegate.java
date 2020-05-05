@@ -53,7 +53,6 @@ class PostProcessorRegistrationDelegate {
 	public static void invokeBeanFactoryPostProcessors(
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
-		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
 		// 首先调用 BeanDefinitionRegistryPostProcessors 处理器
 		Set<String> processedBeans = new HashSet<>();
 
@@ -190,9 +189,6 @@ class PostProcessorRegistrationDelegate {
 		// 获取后置处理器的名字
 		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
 
-		// Register BeanPostProcessorChecker that logs an info message when
-		// a bean is created during BeanPostProcessor instantiation, i.e. when
-		// a bean is not eligible for getting processed by all BeanPostProcessors.
 		/*
 		 * 注册BeanPostProcessorChecker，
 		 * 该检查器在BeanPostProcessor实例化期间创建bean时记录信息消息，即当bean不符合所有BeanPostProcessor处理的条件时

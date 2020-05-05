@@ -49,6 +49,7 @@ import org.springframework.lang.Nullable;
 public interface NamespaceHandler {
 
 	/**
+	 * 对象的构造函数调用之后、属性初始化之前被DefaultNamespaceHandlerResolver调用
 	 * Invoked by the {@link DefaultBeanDefinitionDocumentReader} after
 	 * construction but before any custom elements are parsed.
 	 * @see NamespaceHandlerSupport#registerBeanDefinitionParser(String, BeanDefinitionParser)

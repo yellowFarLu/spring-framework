@@ -33,14 +33,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
 
 /**
- * Default implementation of the {@link NamespaceHandlerResolver} interface.
- * Resolves namespace URIs to implementation classes based on the mappings
- * contained in mapping file.
- *
- * <p>By default, this implementation looks for the mapping file at
- * {@code META-INF/spring.handlers}, but this can be changed using the
- * {@link #DefaultNamespaceHandlerResolver(ClassLoader, String)} constructor.
- *
+ * 根据映射文件中包含的映射将名称空间URI解析为实现类
  * @author Rob Harrop
  * @author Juergen Hoeller
  * @since 2.0
@@ -50,7 +43,8 @@ import org.springframework.util.CollectionUtils;
 public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver {
 
 	/**
-	 * The location to look for the mapping files. Can be present in multiple JAR files.
+	 * spring容器会默认加载classpath/META-INF下的spring.handlers和spring.schemas文件，来加载名空间处理器和xsd，
+	 * 所以dubbo-config-spring包下的META-INF目录下就有这两个文件。
 	 */
 	public static final String DEFAULT_HANDLER_MAPPINGS_LOCATION = "META-INF/spring.handlers";
 
@@ -115,7 +109,9 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	@Override
 	@Nullable
 	public NamespaceHandler resolve(String namespaceUri) {
+		// 加载命名空间处理器对应的映射
 		Map<String, Object> handlerMappings = getHandlerMappings();
+		// 根据命名空间的url，获取命名空间处理器
 		Object handlerOrClassName = handlerMappings.get(namespaceUri);
 		if (handlerOrClassName == null) {
 			return null;
@@ -126,12 +122,15 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 		else {
 			String className = (String) handlerOrClassName;
 			try {
+				// 获取该类的class对象
 				Class<?> handlerClass = ClassUtils.forName(className, this.classLoader);
 				if (!NamespaceHandler.class.isAssignableFrom(handlerClass)) {
 					throw new FatalBeanException("Class [" + className + "] for namespace [" + namespaceUri +
 							"] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
 				}
+				// 实例化该类的对象
 				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
+				// 调用init初始化命名空间处理器
 				namespaceHandler.init();
 				handlerMappings.put(namespaceUri, namespaceHandler);
 				return namespaceHandler;
@@ -148,7 +147,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	}
 
 	/**
-	 * Load the specified NamespaceHandler mappings lazily.
+	 * 懒加载 命名空间处理器对应的映射
 	 */
 	private Map<String, Object> getHandlerMappings() {
 		Map<String, Object> handlerMappings = this.handlerMappings;

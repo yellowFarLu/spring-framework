@@ -186,6 +186,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	}
 
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+		/*
+		 * 处理import标签，会取出resource的值，加载resource路径下的配置文件。并且把配置文件中的标签解析成beanDefinition
+		 * 比如说处理 resource的值为"classpath*:/spring/dubbo-config.xml"，则去该路径下载配置文件dubbo-config.xml
+		 */
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
 			importBeanDefinitionResource(ele);
 		}
@@ -206,6 +210,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * from the given resource into the bean factory.
 	 */
 	protected void importBeanDefinitionResource(Element ele) {
+		// 从resource路径下面加载配置文件
 		String location = ele.getAttribute(RESOURCE_ATTRIBUTE);
 		if (!StringUtils.hasText(location)) {
 			getReaderContext().error("Resource location must not be empty", ele);
@@ -227,9 +232,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			// unless it is the well-known Spring prefix "classpath*:"
 		}
 
-		// Absolute or relative?
+		// 判断是绝对路径 还是 相对路径
 		if (absoluteLocation) {
 			try {
+				// 利用reader加载beanDefinition（里面就会使用到dubbo解析器解析dubbo标签）
 				int importCount = getReaderContext().getReader().loadBeanDefinitions(location, actualResources);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Imported " + importCount + " bean definitions from URL location [" + location + "]");

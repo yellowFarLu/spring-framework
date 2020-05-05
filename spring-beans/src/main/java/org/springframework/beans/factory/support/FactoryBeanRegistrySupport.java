@@ -43,6 +43,9 @@ import org.springframework.lang.Nullable;
  */
 public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanRegistry {
 
+	/*
+	 * 对象实例缓存
+	 */
 	/** Cache of singleton objects created by FactoryBeans: FactoryBean name --> object */
 	private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>(16);
 
@@ -159,6 +162,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 				}
 			}
 			else {
+				// 从实现org.springframework.beans.factory.FactoryBean接口的对象中获取实例
 				object = factory.getObject();
 			}
 		}
